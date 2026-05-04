@@ -4,11 +4,11 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"dev": "./pocketbase serve --http=0.0.0.0:8090 --encryptionEnv=PB_ENCRYPTION_KEY --hooksWatch=false",
-		"start": "./pocketbase serve --http=0.0.0.0:8090 --encryptionEnv=PB_ENCRYPTION_KEY --dir=/data --migrationsDir=./pb_migrations --hooksDir=./pb_hooks --hooksWatch=false",
-		"migrations:up": "./pocketbase horizons migrations:up --encryptionEnv=PB_ENCRYPTION_KEY --dir=/data --migrationsDir=./pb_migrations --hooksDir=./pb_hooks --hooksWatch=false",
-		"migrations:revert": "./pocketbase horizons migrations:revert --encryptionEnv=PB_ENCRYPTION_KEY --dir=/data --migrationsDir=./pb_migrations --hooksDir=./pb_hooks --hooksWatch=false",
-		"migrations:snapshot": "mkdir -p ./pb_snapshots && echo 'y' | ./pocketbase migrate collections --encryptionEnv=PB_ENCRYPTION_KEY --dir=/data --migrationsDir=./pb_snapshots",
-		"update": "./pocketbase update --encryptionEnv=PB_ENCRYPTION_KEY --backup=0"
+		"setup": "node setup.js",
+		"dev": "node start.js serve --http=0.0.0.0:8090 --dir=./pb_data --migrationsDir=./pb_migrations --hooksDir=./pb_hooks --hooksWatch=false",
+		"start": "node start.js serve --http=0.0.0.0:8090 --dir=./pb_data --migrationsDir=./pb_migrations --hooksDir=./pb_hooks --hooksWatch=false",
+		"migrations:up": "node start.js migrate up --dir=./pb_data --migrationsDir=./pb_migrations --hooksDir=./pb_hooks",
+		"migrations:revert": "node start.js migrate down --dir=./pb_data --migrationsDir=./pb_migrations --hooksDir=./pb_hooks",
+		"update": "node start.js update --backup=0"
 	}
 }

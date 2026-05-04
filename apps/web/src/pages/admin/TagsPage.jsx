@@ -5,11 +5,13 @@ import AdminLayout from '@/components/admin/AdminLayout.jsx';
 import LoadingSpinner from '@/components/admin/LoadingSpinner.jsx';
 import EmptyState from '@/components/admin/EmptyState.jsx';
 import pb from '@/lib/pocketbaseClient.js';
+import { useAuth } from '@/contexts/AuthContext.jsx';
 
 const slugify = (s) =>
   s.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
 
 function TagsPage() {
+  const { isAdmin } = useAuth();
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('');
@@ -63,6 +65,11 @@ function TagsPage() {
       <div className="mb-6">
         <h2 className="text-2xl font-serif font-bold">Tags</h2>
         <p className="text-[hsl(var(--muted-foreground))]">Lightweight taxonomy for posts.</p>
+        {!isAdmin && (
+          <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
+            Deleting tags is limited to admins; you can add tags and use them in posts.
+          </p>
+        )}
       </div>
 
       <form onSubmit={create} className="admin-card p-4 mb-6 flex gap-3">
@@ -94,9 +101,11 @@ function TagsPage() {
                 className="group inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[hsl(var(--admin-border))] bg-[hsl(var(--admin-hover))/40] text-sm"
               >
                 {tag.name}
-                <button onClick={() => remove(tag.id)} className="opacity-50 group-hover:opacity-100 hover:text-[hsl(var(--admin-error))]">
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                {isAdmin && (
+                  <button onClick={() => remove(tag.id)} className="opacity-50 group-hover:opacity-100 hover:text-[hsl(var(--admin-error))]">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </span>
             ))}
           </div>

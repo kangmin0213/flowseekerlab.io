@@ -3,13 +3,19 @@ import { toast } from 'sonner';
 import pb from '@/lib/pocketbaseClient.js';
 import { useLanguage } from '@/contexts/LanguageContext.jsx';
 import { formatDate } from '@/lib/postFormat.js';
+import { getCommentsEnabled } from '@/lib/cmsSettings.js';
 
 function CommentsSection({ postId }) {
   const { t, lang } = useLanguage();
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [commentsOpen, setCommentsOpen] = useState(true);
   const [form, setForm] = useState({ author_name: '', author_email: '', content: '' });
+
+  useEffect(() => {
+    getCommentsEnabled().then(setCommentsOpen);
+  }, []);
 
   const load = async () => {
     if (!postId) return;
@@ -35,6 +41,7 @@ function CommentsSection({ postId }) {
 
   const submit = async (e) => {
     e.preventDefault();
+    if (!commentsOpen) return;
     if (!form.author_name || !form.author_email || !form.content) return;
     try {
       setSubmitting(true);
@@ -83,42 +90,48 @@ function CommentsSection({ postId }) {
           )}
         </div>
 
-        <form onSubmit={submit} className="rounded-lg border border-border bg-background p-6">
-          <h3 className="font-serif font-semibold mb-4">{t('post.leaveComment')}</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <input
-              type="text"
+        {commentsOpen ? (
+          <form onSubmit={submit} className="rounded-lg border border-border bg-background p-6">
+            <h3 className="font-serif font-semibold mb-4">{t('post.leaveComment')}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <input
+                type="text"
+                required
+                placeholder={t('post.name')}
+                value={form.author_name}
+                onChange={(e) => setForm({ ...form, author_name: e.target.value })}
+                className="w-full bg-transparent border border-border rounded-md focus:border-primary focus:outline-none px-3 py-2 text-sm"
+              />
+              <input
+                type="email"
+                required
+                placeholder={t('post.email')}
+                value={form.author_email}
+                onChange={(e) => setForm({ ...form, author_email: e.target.value })}
+                className="w-full bg-transparent border border-border rounded-md focus:border-primary focus:outline-none px-3 py-2 text-sm"
+              />
+            </div>
+            <textarea
               required
-              placeholder={t('post.name')}
-              value={form.author_name}
-              onChange={(e) => setForm({ ...form, author_name: e.target.value })}
-              className="w-full bg-transparent border border-border rounded-md focus:border-primary focus:outline-none px-3 py-2 text-sm"
+              placeholder={t('post.message')}
+              rows={4}
+              value={form.content}
+              onChange={(e) => setForm({ ...form, content: e.target.value })}
+              className="w-full bg-transparent border border-border rounded-md focus:border-primary focus:outline-none px-3 py-2 text-sm resize-y mb-4"
             />
-            <input
-              type="email"
-              required
-              placeholder={t('post.email')}
-              value={form.author_email}
-              onChange={(e) => setForm({ ...form, author_email: e.target.value })}
-              className="w-full bg-transparent border border-border rounded-md focus:border-primary focus:outline-none px-3 py-2 text-sm"
-            />
+            <button
+              type="submit"
+              disabled={submitting}
+              className="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+            >
+              {submitting ? t('common.loading') : t('post.submit')}
+            </button>
+          </form>
+        ) : (
+          <div className="rounded-lg border border-border bg-muted/30 p-6 text-sm text-muted-foreground">
+            {t('post.commentsClosed')}
           </div>
-          <textarea
-            required
-            placeholder={t('post.message')}
-            rows={4}
-            value={form.content}
-            onChange={(e) => setForm({ ...form, content: e.target.value })}
-            className="w-full bg-transparent border border-border rounded-md focus:border-primary focus:outline-none px-3 py-2 text-sm resize-y mb-4"
-          />
-          <button
-            type="submit"
-            disabled={submitting}
-            className="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
-          >
-            {submitting ? t('common.loading') : t('post.submit')}
-          </button>
-        </form>
+        )}
       </div>
     </section>
   );

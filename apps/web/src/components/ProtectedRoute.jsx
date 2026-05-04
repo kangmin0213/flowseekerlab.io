@@ -7,13 +7,6 @@ function ProtectedRoute({ children, requireAdmin = false }) {
   const { isAuthenticated, isAdmin } = useAuth();
   const location = useLocation();
 
-  // Log to verify auth state is being checked
-  console.log('ProtectedRoute check:', { 
-    isAuthenticated, 
-    isAdmin, 
-    path: location.pathname 
-  });
-
   if (!isAuthenticated) {
     // Redirect them to the /admin login page, but save the current location they were
     // trying to go to when they were redirected. This allows us to send them

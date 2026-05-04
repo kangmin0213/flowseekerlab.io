@@ -1,11 +1,22 @@
 node_modules/
 dist/
 build/
+
+# Secrets and machine-local env (tracked templates: *.example, .env.production.example)
+.env
+!.env.example
+**/.env
+!**/.env.example
+**/.env.production
+!**/.env.production.example
+!.env.production.example
+
 .env.local
 .env.*.local
 *.log
 .DS_Store
 .vite/
+Thumbs.db
 
 apps/pocketbase/pocketbase
 apps/pocketbase/pocketbase.exe

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Terminal } from 'lucide-react';
+import { FileImage, Terminal } from 'lucide-react';
 import { featuredImageUrl, formatDate, calcReadTime, stripHtml } from '@/lib/postFormat.js';
 import { useLanguage } from '@/contexts/LanguageContext.jsx';
 
@@ -10,9 +10,7 @@ function BlogCard({ post, index = 0 }) {
   const category = post.expand?.category_id;
   const author = post.expand?.author_id;
   const isProjectLog = category?.name === 'Agents Harness Lab';
-  const thumbnail =
-    featuredImageUrl(post) ||
-    'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800';
+  const thumbnail = featuredImageUrl(post);
   const excerpt = post.excerpt || stripHtml(post.content, 180);
   const dateStr = formatDate(post.published_at || post.created, lang === 'ko' ? 'ko-KR' : 'en-US');
   const readTime = calcReadTime(post.content);
@@ -33,12 +31,19 @@ function BlogCard({ post, index = 0 }) {
         to={`/blog/${post.slug}`}
         className="md:col-span-5 overflow-hidden rounded-lg bg-muted aspect-[4/3] md:aspect-auto md:h-full relative block"
       >
-        <img
-          src={thumbnail}
-          alt={post.title}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
-          loading="lazy"
-        />
+        {thumbnail ? (
+          <img
+            src={thumbnail}
+            alt={post.title}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
+            loading="lazy"
+          />
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-muted to-muted/60 text-muted-foreground">
+            <FileImage className="h-10 w-10 opacity-40" aria-hidden />
+            <span className="text-xs font-medium uppercase tracking-wider opacity-70">{t('home.noCover')}</span>
+          </div>
+        )}
         {isProjectLog && (
           <div className="absolute top-3 left-3 bg-background/90 backdrop-blur-sm border border-border text-foreground text-xs font-bold px-2.5 py-1 rounded flex items-center gap-1.5 shadow-sm">
             <Terminal className="h-3 w-3 text-primary" />

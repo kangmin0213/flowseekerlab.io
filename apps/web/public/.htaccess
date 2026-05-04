@@ -1,19 +1,44 @@
+# -----------------------------------------------------------------------------
+# (1) Canonical origin: https://flowseekerlab.io (apex, HTTPS)
+#     Change the host below if your public site uses www instead.
+# (4) Hostinger Horizon iframe preview is dev-only; acceptance = this origin.
+# (5) Cache: HTML shell short-lived; hashed /assets + static extensions long-lived.
+# -----------------------------------------------------------------------------
+
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	RewriteBase /
+
+	# www → apex (single hostname for cookies and OAuth-style redirects)
+	RewriteCond %{HTTP_HOST} ^www\.flowseekerlab\.io$ [NC]
+	RewriteRule ^ https://flowseekerlab.io%{REQUEST_URI} [L,R=301]
+
+	# HTTP → HTTPS on apex (proxy-friendly)
+	RewriteCond %{HTTP_HOST} ^flowseekerlab\.io$ [NC]
+	RewriteCond %{HTTPS} !=on
+	RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+	RewriteRule ^ https://flowseekerlab.io%{REQUEST_URI} [L,R=301]
+
+	# SPA fallback
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteRule ^ index.html [L]
 </IfModule>
 
 <IfModule mod_headers.c>
-	Header set X-Powered-By "Hostinger Horizons"
+	# HTML shell: do not cache long at CDN/browser — new deploys show up quickly
+	<Files "index.html">
+		Header set Cache-Control "no-cache, no-store, must-revalidate"
+		Header set Pragma "no-cache"
+	</Files>
 
-	# Cache everything on CDN by default
-	Header set Cache-Control "public, s-maxage=604800, max-age=0"
-
-	# Cache in browser all assets
+	# Hashed Vite bundles
 	<If "%{REQUEST_URI} =~ m#^/assets/.*$#">
-		Header set Cache-Control "public, max-age=604800"
+		Header set Cache-Control "public, max-age=31536000, immutable"
 	</If>
+
+	# Root static files (favicon, PWA icons, robots, well-known, etc.)
+	<FilesMatch "\.(ico|png|svg|webp|woff2?|txt|xml|webmanifest)$">
+		Header set Cache-Control "public, max-age=604800, stale-while-revalidate=86400"
+	</FilesMatch>
 </IfModule>

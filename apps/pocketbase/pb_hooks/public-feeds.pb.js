@@ -65,14 +65,21 @@ routerAdd("GET", "/sitemap.xml", (e) => {
 
   const escape = (s) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+  const tags = $app.findRecordsByFilter("tags", "", "-updated", 500) || [];
+
   const urls = [
     `<url><loc>${siteUrl}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>`,
     `<url><loc>${siteUrl}/blog</loc><changefreq>daily</changefreq><priority>0.9</priority></url>`,
     `<url><loc>${siteUrl}/search</loc><priority>0.3</priority></url>`,
+    `<url><loc>${siteUrl}/privacy</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>`,
+    `<url><loc>${siteUrl}/terms</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>`,
   ];
 
   for (const c of categories) {
     urls.push(`<url><loc>${siteUrl}/category/${escape(c.get("slug"))}</loc><lastmod>${new Date(c.get("updated")).toISOString()}</lastmod><priority>0.7</priority></url>`);
+  }
+  for (const tg of tags) {
+    urls.push(`<url><loc>${siteUrl}/tag/${escape(tg.get("slug"))}</loc><lastmod>${new Date(tg.get("updated")).toISOString()}</lastmod><priority>0.65</priority></url>`);
   }
   for (const p of posts) {
     urls.push(`<url><loc>${siteUrl}/blog/${escape(p.get("slug"))}</loc><lastmod>${new Date(p.get("updated")).toISOString()}</lastmod><priority>0.8</priority></url>`);

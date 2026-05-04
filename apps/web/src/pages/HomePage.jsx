@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '@/components/Header.jsx';
 import Footer from '@/components/Footer.jsx';
 import BlogCard from '@/components/BlogCard.jsx';
@@ -7,23 +8,34 @@ import SEO from '@/components/SEO.jsx';
 import LoadingSpinner from '@/components/admin/LoadingSpinner.jsx';
 import pb from '@/lib/pocketbaseClient.js';
 import { useLanguage } from '@/contexts/LanguageContext.jsx';
+import { getPostsPerPage } from '@/lib/cmsSettings.js';
 
 function HomePage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [totalPublished, setTotalPublished] = useState(0);
+  const [perPage, setPerPage] = useState(20);
   const { t } = useLanguage();
+
+  useEffect(() => {
+    getPostsPerPage().then(setPerPage);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      setLoading(true);
       try {
-        const list = await pb.collection('posts').getList(1, 20, {
+        const list = await pb.collection('posts').getList(1, perPage, {
           filter: 'status = "published"',
           sort: '-published_at',
           expand: 'author_id,category_id',
           $autoCancel: false,
         });
-        if (!cancelled) setPosts(list.items);
+        if (!cancelled) {
+          setPosts(list.items);
+          setTotalPublished(list.totalItems ?? list.items.length);
+        }
       } catch {
         if (!cancelled) setPosts([]);
       } finally {
@@ -33,7 +45,7 @@ function HomePage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [perPage]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col selection:bg-primary/20">
@@ -81,14 +93,31 @@ function HomePage() {
               {loading ? (
                 <div className="py-20 flex justify-center"><LoadingSpinner size="lg" /></div>
               ) : posts.length === 0 ? (
-                <div className="py-16 text-center text-muted-foreground">
-                  <p>No posts yet. Check back soon.</p>
+                <div className="py-16 text-center max-w-md mx-auto rounded-xl border border-border bg-card/50 px-6 py-10">
+                  <p className="font-serif text-lg font-semibold text-foreground mb-2">{t('home.noPostsTitle')}</p>
+                  <p className="text-sm text-muted-foreground mb-6 leading-relaxed">{t('home.noPostsBody')}</p>
+                  <Link
+                    to="/admin"
+                    className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity"
+                  >
+                    {t('home.openAdmin')}
+                  </Link>
                 </div>
               ) : (
                 <div className="flex flex-col">
                   {posts.map((post, index) => (
                     <BlogCard key={post.id} post={post} index={index} />
                   ))}
+                  {totalPublished > perPage && (
+                    <div className="mt-8 text-center">
+                      <Link
+                        to="/blog"
+                        className="inline-flex text-sm font-medium text-primary hover:underline"
+                      >
+                        {t('home.viewAllPosts')}
+                      </Link>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

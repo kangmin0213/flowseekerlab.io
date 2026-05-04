@@ -1,48 +1,54 @@
-
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import pb from '@/lib/pocketbaseClient.js';
 
 const AuthContext = createContext();
 
+function readSession() {
+  return {
+    model: pb.authStore.model,
+    valid: pb.authStore.isValid,
+  };
+}
+
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(pb.authStore.model);
+  const [session, setSession] = useState(readSession);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Initial state set from synchronous authStore
-    setCurrentUser(pb.authStore.model);
+    setSession(readSession());
     setIsLoading(false);
 
-    // Subscribe to auth state changes across the app or tabs
-    const unsubscribe = pb.authStore.onChange((token, model) => {
-      setCurrentUser(model);
+    const unsubscribe = pb.authStore.onChange(() => {
+      setSession(readSession());
     });
 
     return () => unsubscribe();
   }, []);
 
-  const login = async (email, password) => {
-    // Ensure $autoCancel is false as per PocketBase rules
-    const authData = await pb.collection('users').authWithPassword(email, password, { 
-      $autoCancel: false 
+  const login = useCallback(async (email, password) => {
+    const authData = await pb.collection('users').authWithPassword(email, password, {
+      $autoCancel: false,
     });
-    setCurrentUser(authData.record);
+    setSession(readSession());
     return authData;
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     pb.authStore.clear();
-    setCurrentUser(null);
-  };
+    setSession(readSession());
+  }, []);
 
-  const value = {
-    currentUser,
-    login,
-    logout,
-    isAuthenticated: pb.authStore.isValid,
-    isAdmin: pb.authStore.model?.role === 'admin',
-    isEditor: pb.authStore.model?.role === 'editor',
-  };
+  const value = useMemo(
+    () => ({
+      currentUser: session.model,
+      login,
+      logout,
+      isAuthenticated: session.valid,
+      isAdmin: session.model?.role === 'admin',
+      isEditor: session.model?.role === 'editor',
+    }),
+    [session]
+  );
 
   return (
     <AuthContext.Provider value={value}>

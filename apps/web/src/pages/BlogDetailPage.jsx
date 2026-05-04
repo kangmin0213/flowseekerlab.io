@@ -10,6 +10,7 @@ import CommentsSection from '@/components/CommentsSection.jsx';
 import RelatedPosts from '@/components/RelatedPosts.jsx';
 import LoadingSpinner from '@/components/admin/LoadingSpinner.jsx';
 import pb from '@/lib/pocketbaseClient.js';
+import { escapePbFilter } from '@/lib/pbFilter.js';
 import { calcReadTime, formatDate, featuredImageUrl, stripHtml } from '@/lib/postFormat.js';
 import { useLanguage } from '@/contexts/LanguageContext.jsx';
 import { canonicalUrl } from '@/lib/seo.js';
@@ -25,7 +26,9 @@ function BlogDetailPage() {
 
   const incrementViews = useCallback(async (id) => {
     try {
-      await fetch(`/api/posts/${id}/view`, {
+      const base = (pb.baseUrl || import.meta.env.VITE_POCKETBASE_URL || '').replace(/\/$/, '');
+      if (!base) return;
+      await fetch(`${base}/api/posts/${encodeURIComponent(id)}/view`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -40,8 +43,9 @@ function BlogDetailPage() {
       setLoading(true);
       setNotFound(false);
       try {
+        const safeSlug = escapePbFilter(slug);
         const result = await pb.collection('posts').getList(1, 1, {
-          filter: `slug = "${slug}" && status = "published"`,
+          filter: `slug = "${safeSlug}" && status = "published"`,
           expand: 'author_id,category_id',
           $autoCancel: false,
         });

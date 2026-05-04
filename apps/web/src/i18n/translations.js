@@ -14,6 +14,12 @@ export const translations = {
     home: {
       latest: 'Latest Dispatches',
       readMore: 'Read more',
+      noCover: 'No cover image',
+      noPostsTitle: 'No published posts yet',
+      noPostsBody: 'When you publish articles in the admin, they will appear here.',
+      openAdmin: 'Open admin',
+      sidebarTags: 'Topics',
+      viewAllPosts: 'View all posts →',
     },
     post: {
       readTime: 'min read',
@@ -30,6 +36,7 @@ export const translations = {
       submit: 'Submit',
       pending: 'Your comment is pending moderation.',
       empty: 'No comments yet — be the first.',
+      commentsClosed: 'New comments are turned off for this site. Approved past comments may still appear above.',
     },
     common: {
       loading: 'Loading...',
@@ -40,10 +47,19 @@ export const translations = {
       searchPlaceholder: 'Search posts...',
       noResults: 'No results found.',
     },
+    pagination: {
+      prev: 'Previous',
+      next: 'Next',
+      pageOf: 'Page {{page}} of {{total}}',
+    },
+    legal: {
+      lastUpdatedLabel: 'Last updated:',
+    },
     footer: {
       tagline: 'Read the flow with AI & Crypto, and turn it into action.',
       navigation: 'Navigation',
       connect: 'Connect',
+      socialPlaceholder: 'Social links can be set in environment variables (see .env.example).',
       privacy: 'Privacy Policy',
       terms: 'Terms of Service',
     },
@@ -60,6 +76,12 @@ export const translations = {
     home: {
       latest: '최신 글',
       readMore: '더 읽기',
+      noCover: '대표 이미지 없음',
+      noPostsTitle: '아직 발행된 글이 없습니다',
+      noPostsBody: '관리자에서 글을 발행하면 여기에 표시됩니다.',
+      openAdmin: '관리자 열기',
+      sidebarTags: '토픽',
+      viewAllPosts: '전체 글 보기 →',
     },
     post: {
       readTime: '분 분량',
@@ -76,6 +98,7 @@ export const translations = {
       submit: '등록',
       pending: '댓글은 관리자 승인 후 노출됩니다.',
       empty: '아직 댓글이 없습니다 — 첫 댓글을 남겨주세요.',
+      commentsClosed: '이 사이트에서는 새 댓글 작성이 꺼져 있습니다. 위에는 이미 승인된 댓글이 보일 수 있습니다.',
     },
     common: {
       loading: '불러오는 중...',
@@ -86,10 +109,19 @@ export const translations = {
       searchPlaceholder: '글 검색...',
       noResults: '검색 결과가 없습니다.',
     },
+    pagination: {
+      prev: '이전',
+      next: '다음',
+      pageOf: '{{page}} / {{total}} 페이지',
+    },
+    legal: {
+      lastUpdatedLabel: '최종 수정:',
+    },
     footer: {
       tagline: 'AI와 크립토의 흐름을 읽고, 행동으로 옮깁니다.',
       navigation: '메뉴',
       connect: '소셜',
+      socialPlaceholder: '소셜 링크는 환경 변수로 설정할 수 있습니다(.env.example 참고).',
       privacy: '개인정보 처리방침',
       terms: '이용약관',
     },

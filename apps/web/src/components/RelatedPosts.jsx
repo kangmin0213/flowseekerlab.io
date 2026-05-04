@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import pb from '@/lib/pocketbaseClient.js';
+import { escapePbFilter } from '@/lib/pbFilter.js';
 import { featuredImageUrl, formatDate } from '@/lib/postFormat.js';
 import { useLanguage } from '@/contexts/LanguageContext.jsx';
 
@@ -12,8 +13,8 @@ function RelatedPosts({ currentId, categoryId }) {
     let cancelled = false;
     (async () => {
       try {
-        const filters = [`status = "published"`, `id != "${currentId}"`];
-        if (categoryId) filters.push(`category_id = "${categoryId}"`);
+        const filters = [`status = "published"`, `id != "${escapePbFilter(currentId)}"`];
+        if (categoryId) filters.push(`category_id = "${escapePbFilter(categoryId)}"`);
         const list = await pb.collection('posts').getList(1, 3, {
           filter: filters.join(' && '),
           sort: '-published_at',

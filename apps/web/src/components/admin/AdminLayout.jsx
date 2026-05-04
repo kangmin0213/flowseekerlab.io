@@ -31,7 +31,7 @@ function AdminLayout({ children }) {
     { name: 'Comments', path: '/admin/comments', icon: MessageSquare },
     { name: 'Media', path: '/admin/media', icon: ImageIcon },
     { name: 'Users', path: '/admin/users', icon: Users, adminOnly: true },
-    { name: 'Settings', path: '/admin/settings', icon: Settings, adminOnly: true },
+    { name: 'Settings', path: '/admin/settings', icon: Settings },
   ];
 
   const handleLogout = () => {

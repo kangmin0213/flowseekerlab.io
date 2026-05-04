@@ -14,9 +14,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // If already authenticated, redirect away from login
   useEffect(() => {
-    console.log('Rendering LoginPage at /admin. Authenticated:', isAuthenticated);
     if (isAuthenticated) {
       navigate('/admin/dashboard', { replace: true });
     }
@@ -47,8 +45,13 @@ function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-[hsl(var(--admin-bg))] px-4">
       <div className="w-full max-w-md admin-card">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-serif font-bold mb-2">The Flow</h1>
+          <h1 className="text-3xl font-serif font-bold mb-2">FlowSeeker Lab</h1>
           <p className="text-[hsl(var(--muted-foreground))]">Sign in to the admin dashboard</p>
+          <p className="mt-4 text-left text-xs text-[hsl(var(--muted-foreground))] leading-relaxed rounded-md border border-[hsl(var(--admin-border))] bg-[hsl(var(--admin-hover))/30] px-3 py-2">
+            <span className="font-semibold text-[hsl(var(--admin-text))]">한국어 안내 · </span>
+            글을 쓰려면 먼저 아래에서 로그인한 다음, 왼쪽 메뉴에서 <strong>Posts</strong>를 누른 뒤 <strong>New Post</strong>를 누르세요.
+            주소창에 직접 <code className="text-[11px]">/admin/posts/new</code>를 치면 로그인이 안 된 경우 홈처럼 보일 수 있습니다. 서버에 <code className="text-[11px]">.htaccess</code> 파일이 같이 올라가 있는지도 확인하세요.
+          </p>
         </div>
 
         {error && (
@@ -66,7 +69,7 @@ function LoginPage() {
               className="admin-input bg-[hsl(var(--admin-sidebar-bg))] text-[hsl(var(--admin-text))]"
               required
               autoComplete="email"
-              placeholder="admin@theflow.com"
+              placeholder="you@flowseekerlab.io"
             />
           </FormField>
 

@@ -290,6 +290,7 @@ export default defineConfig({
 	},
 	customLogger: logger,
 	plugins: [
+		// Dev-only: Horizon iframe / editor helpers. Production behaviour is verified on the canonical public URL (see public/.htaccess).
 		...(isDev ? [inlineEditPlugin(), editModeDevPlugin(), selectionModePlugin(), iframeRouteRestorationPlugin(), pocketbaseAuthPlugin()] : []),
 		react(),
 		addTransformIndexHtml

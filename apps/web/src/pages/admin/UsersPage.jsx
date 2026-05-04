@@ -52,6 +52,11 @@ function UsersPage() {
       <div className="mb-6">
         <h2 className="text-2xl font-serif font-bold">Users</h2>
         <p className="text-[hsl(var(--muted-foreground))]">Manage authors, editors, and admins.</p>
+        <p className="mt-2 text-xs text-[hsl(var(--muted-foreground))] max-w-2xl leading-relaxed">
+          This screen is admin-only by design: changing roles or deleting accounts affects who can access the CMS.
+          Editors should use <strong className="text-[hsl(var(--admin-text))]">Settings</strong> for their own display name,
+          and <strong className="text-[hsl(var(--admin-text))]">Categories / Tags</strong> for taxonomy — not this page.
+        </p>
       </div>
 
       <div className="admin-card p-0 overflow-hidden">

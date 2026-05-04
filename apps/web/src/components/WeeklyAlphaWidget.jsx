@@ -1,13 +1,16 @@
-
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, TrendingUp } from 'lucide-react';
-import { fallbackAiTrends } from '@/data/mockData.js';
+import { Link } from 'react-router-dom';
+import { RefreshCw, Tag } from 'lucide-react';
+import pb from '@/lib/pocketbaseClient.js';
+import { useLanguage } from '@/contexts/LanguageContext.jsx';
 
 function WeeklyAlphaWidget() {
+  const { t } = useLanguage();
   const [fngData, setFngData] = useState({ value: 50, label: 'Neutral', timestamp: null });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [tags, setTags] = useState([]);
 
   const fetchFng = async () => {
     try {
@@ -43,6 +46,24 @@ function WeeklyAlphaWidget() {
     // Refresh every 5 minutes (300,000 ms)
     const interval = setInterval(fetchFng, 300000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await pb.collection('tags').getList(1, 12, {
+          sort: 'name',
+          $autoCancel: false,
+        });
+        if (!cancelled) setTags(res.items || []);
+      } catch {
+        if (!cancelled) setTags([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Determine FNG Color token
@@ -141,24 +162,26 @@ function WeeklyAlphaWidget() {
         )}
       </div>
 
-      {/* Top AI Trends Section */}
-      <div className="bg-card border border-border shadow-sm rounded-xl p-5">
-        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-1.5">
-          <TrendingUp className="h-3.5 w-3.5" />
-          Top AI Trends
-        </h4>
-        <div className="flex flex-wrap gap-2">
-          {fallbackAiTrends.map((trend, idx) => (
-            <span 
-              key={idx} 
-              className="inline-flex items-center px-2.5 py-1 rounded-md bg-secondary text-secondary-foreground text-xs font-sans font-medium border border-border/50 hover:bg-secondary/80 transition-colors cursor-default"
-            >
-              {trend}
-            </span>
-          ))}
+      {tags.length > 0 && (
+        <div className="bg-card border border-border shadow-sm rounded-xl p-5">
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-1.5">
+            <Tag className="h-3.5 w-3.5" />
+            {t('home.sidebarTags')}
+          </h4>
+          <div className="flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <Link
+                key={tag.id}
+                to={`/tag/${encodeURIComponent(tag.slug)}`}
+                className="inline-flex items-center px-2.5 py-1 rounded-md bg-secondary text-secondary-foreground text-xs font-sans font-medium border border-border/50 hover:bg-secondary/80 transition-colors"
+              >
+                {tag.name}
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
-      
+      )}
+
     </div>
   );
 }

@@ -6,6 +6,7 @@ import LoadingSpinner from '@/components/admin/LoadingSpinner.jsx';
 import EmptyState from '@/components/admin/EmptyState.jsx';
 import FormField from '@/components/admin/FormField.jsx';
 import pb from '@/lib/pocketbaseClient.js';
+import { useAuth } from '@/contexts/AuthContext.jsx';
 
 const slugify = (s) =>
   s
@@ -80,6 +81,7 @@ function CategoryForm({ initial, onSave, onCancel }) {
 }
 
 function CategoriesPage() {
+  const { isAdmin } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
@@ -143,6 +145,11 @@ function CategoriesPage() {
         <div>
           <h2 className="text-2xl font-serif font-bold">Categories</h2>
           <p className="text-[hsl(var(--muted-foreground))]">Manage taxonomy and site structure.</p>
+          {!isAdmin && (
+            <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">
+              Only admins can delete categories; editors can create and edit.
+            </p>
+          )}
         </div>
         {!creating && !editing && (
           <button
@@ -187,9 +194,11 @@ function CategoriesPage() {
                       <button onClick={() => setEditing(c)} className="p-1.5 hover:text-[hsl(var(--admin-accent))]">
                         <Edit className="h-4 w-4" />
                       </button>
-                      <button onClick={() => remove(c.id)} className="p-1.5 hover:text-[hsl(var(--admin-error))]">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {isAdmin && (
+                        <button onClick={() => remove(c.id)} className="p-1.5 hover:text-[hsl(var(--admin-error))]">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
