@@ -3,8 +3,14 @@
  * Railway/Nixpacks-friendly PocketBase launcher.
  * - Uses PORT env (Railway) with fallback to 8090 for local parity.
  * - Avoids hardcoding 8090 in package.json scripts.
+ * - Pins cwd to this directory so a custom Start Command / monorepo root cannot break resolution of start.js and the pocketbase binary.
  */
 import { spawn } from 'node:child_process';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const startJs = path.join(__dirname, 'start.js');
 
 const port = process.env.PORT || '8090';
 const args = [
@@ -16,5 +22,12 @@ const args = [
   '--hooksWatch=false',
 ];
 
-const child = spawn(process.execPath, ['start.js', ...args], { stdio: 'inherit' });
+const child = spawn(process.execPath, [startJs, ...args], {
+  stdio: 'inherit',
+  cwd: __dirname,
+});
+child.on('error', (err) => {
+  console.error(err);
+  process.exit(1);
+});
 child.on('exit', (code) => process.exit(code ?? 0));
