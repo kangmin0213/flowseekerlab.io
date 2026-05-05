@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { existsSync, mkdirSync, createWriteStream, readFileSync, chmodSync, renameSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, createWriteStream, readFileSync, chmodSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
@@ -43,7 +43,7 @@ console.log(`[pocketbase] downloading ${url}`);
 await download(url, tmpZip);
 
 console.log(`[pocketbase] extracting to ${__dirname}`);
-extractZip(tmpZip, __dirname);
+await extractZip(tmpZip, __dirname);
 
 if (process.platform !== 'win32') chmodSync(dest, 0o755);
 rmSync(tmpZip);
@@ -74,14 +74,8 @@ async function download(srcUrl, outPath, redirects = 0) {
   });
 }
 
-function extractZip(zipPath, outDir) {
+async function extractZip(zipPath, outDir) {
   mkdirSync(outDir, { recursive: true });
-  if (process.platform === 'win32') {
-    execSync(
-      `powershell -NoProfile -Command "Expand-Archive -Force -Path '${zipPath}' -DestinationPath '${outDir}'"`,
-      { stdio: 'inherit' }
-    );
-  } else {
-    execSync(`unzip -o "${zipPath}" -d "${outDir}"`, { stdio: 'inherit' });
-  }
+  const extract = (await import('extract-zip')).default;
+  await extract(zipPath, { dir: outDir });
 }

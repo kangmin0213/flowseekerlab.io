@@ -1,4 +1,4 @@
 # Railway uses Nixpacks by default. PocketBase may shell out to `ps` on Linux;
-# minimal images often omit it → "spawn ps ENOENT". `unzip` is required by setup.js.
+# minimal images often omit it → "spawn ps ENOENT". Zip extraction uses Node (extract-zip), not unzip.
 [phases.setup]
-aptPkgs = ["...", "procps", "unzip"]
+aptPkgs = ["...", "procps"]
