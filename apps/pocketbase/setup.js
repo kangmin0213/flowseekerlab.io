@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { execSync } from 'node:child_process';
+import extract from 'extract-zip';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const VERSION = readFileSync(path.join(__dirname, '.pocketbase-version'), 'utf8').trim();
@@ -76,6 +77,5 @@ async function download(srcUrl, outPath, redirects = 0) {
 
 async function extractZip(zipPath, outDir) {
   mkdirSync(outDir, { recursive: true });
-  const extract = (await import('extract-zip')).default;
   await extract(zipPath, { dir: outDir });
 }
