@@ -88,6 +88,10 @@ npm run lint                                        # web + api
 
 - `.github/workflows/verify-build.yml` — Node 22, `npm ci`, `npm run build:website` 만.
 
+### 운영 문서
+
+- Railway PocketBase 배포·볼륨·Variables: [docs/railway-pocketbase.md](docs/railway-pocketbase.md).
+
 ---
 
 ## GitHub에 올리면 안 되는 것 (민감·개인정보)
