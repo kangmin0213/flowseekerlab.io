@@ -17,6 +17,8 @@ PocketBase(`apps/pocketbase`)를 Railway에서 운영할 때 필요한 항목만
   - `PB_SUPERUSER_PASSWORD`
 - 위 값과 실제 `.env`는 **저장소에 절대 커밋하지 않는다**. `*.example`에는 이름과 플레이스홀더만 두고, 실값은 Railway Variables → 서비스에서만 관리한다.
 - 비밀번호를 회전하면 PB 슈퍼유저/관리자 계정에 동일하게 반영되었는지 확인한다.
+- `PB_ADMIN_USER_EMAIL` / `PB_ADMIN_USER_PASSWORD`(프론트 `users` 컬렉션 로그인용) admin env는 **첫 배포 전에 넣는 게 안전**하다 — 부트스트랩 마이그레이션이 그때 계정을 생성하기 때문.
+- 이미 놓쳤거나 비번이 틀어졌으면 **신규 sync migration**(예: `pb_migrations/1777980098_resync_admin_user.js`)으로 env 기준 upsert 복구가 가능하다.
 
 ## 웹 프로덕션 URL
 
