@@ -21,6 +21,10 @@ const args = [
   '--hooksDir=./pb_hooks',
   '--hooksWatch=false',
 ];
+// Encrypted settings DB (or Railway variable placeholder): use a 32+ char secret in PB_ENCRYPTION_KEY.
+if (process.env.PB_ENCRYPTION_KEY?.trim()) {
+  args.push('--encryptionEnv=PB_ENCRYPTION_KEY');
+}
 
 const child = spawn(process.execPath, [startJs, ...args], {
   stdio: 'inherit',
